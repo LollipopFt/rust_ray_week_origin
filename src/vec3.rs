@@ -1,4 +1,7 @@
-use std::{f64,ops};
+use std::{
+    io::{self, Write},
+    f64,ops
+};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
@@ -42,8 +45,8 @@ impl Vec3 {
         )
     }
 
-    pub fn prt(&self) {
-        println!("{}", self.fmt());
+    pub fn prt(&self, handle: &mut io::BufWriter<io::Stdout>) {
+        writeln!(handle, "{}", self.fmt()).ok();
     }
 
     pub fn dot(&self, rhs: &Self) -> f64 {
