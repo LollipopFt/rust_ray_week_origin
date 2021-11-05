@@ -6,9 +6,21 @@ mod ray;
 use ray::Ray;
 
 fn ray_color(ray: &Ray) -> Vec3 {
+    if hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray) {
+        return Vec3::new(1.0, 0.0, 0.0)
+    } else {};
     let unit_dir: Vec3 = ray.dir.unit_vec();
     let t: f64 = 0.5 * (unit_dir.y()+1.0);
     Vec3::new(1.0, 1.0, 1.0)*(1.0-t)+Vec3::new(0.5, 0.7, 1.0)*t
+}
+
+fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
+    let oc: Vec3 = r.ori - *center;
+    let a: f64 = r.dir.dot(&r.dir);
+    let b: f64 = oc.dot(&r.dir) * 2.0;
+    let c: f64 = oc.dot(&oc) - radius*radius;
+    let discriminant: f64 = b*b-4.0*a*c;
+    discriminant > 0.0
 }
 
 fn main() {
