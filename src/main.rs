@@ -6,21 +6,27 @@ mod ray;
 use ray::Ray;
 
 fn ray_color(ray: &Ray) -> Vec3 {
-    if hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        return Vec3::new(1.0, 0.0, 0.0)
+    let t: f64 = hit_sphere(&Vec3::new(0.0, 0.0, -1.0), 0.5, ray);
+    if t > 0.0 {
+        let n: Vec3 = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vec();
+        return Vec3::new(n.x()+1.0, n.y()+1.0, n.z()+1.0)*0.5;
     } else {};
     let unit_dir: Vec3 = ray.dir.unit_vec();
     let t: f64 = 0.5 * (unit_dir.y()+1.0);
     Vec3::new(1.0, 1.0, 1.0)*(1.0-t)+Vec3::new(0.5, 0.7, 1.0)*t
 }
 
-fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> bool {
+fn hit_sphere(center: &Vec3, radius: f64, r: &Ray) -> f64 {
     let oc: Vec3 = r.ori - *center;
-    let a: f64 = r.dir.dot(&r.dir);
-    let b: f64 = oc.dot(&r.dir) * 2.0;
-    let c: f64 = oc.dot(&oc) - radius*radius;
-    let discriminant: f64 = b*b-4.0*a*c;
-    discriminant > 0.0
+    let a: f64 = r.dir.length_sq();
+    let half_b: f64 = oc.dot(&r.dir);
+    let c: f64 = oc.length_sq() - radius*radius;
+    let discriminant: f64 = half_b*half_b-a*c;
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        (-half_b - discriminant.sqrt()) / a
+    }
 }
 
 fn main() {
